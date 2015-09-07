@@ -115,7 +115,6 @@ public class LinkListenerService extends Service {
         @Override
         public void run() {
             receiveMessage();
-            launchApp();
         }
 
         private void receiveMessage() {
@@ -130,6 +129,7 @@ public class LinkListenerService extends Service {
                         while ((info = bufferedReader.readLine()) != null && !info.isEmpty()) {
                             Log.d("LinkListenerService", "info: " + info);
                         }
+                        launchApp();
                         sendMessage();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -144,15 +144,8 @@ public class LinkListenerService extends Service {
                 public void run() {
                     BufferedWriter out = null;
                     try {
-//                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-//                        out.println("HTTP/1.1 200 OK");
-//                        out.println("Connection:close");
-//                        out.println("success");
-//                        out.flush();
-//                        out.close();
                         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                        out.write("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 7" +
-                                "\r\n\r\nsuccess");
+                        out.write(RESPONSE);
                         out.flush();
                         Log.d("LinkListenerService", "send feedback");
                     } catch (IOException e) {
@@ -173,4 +166,9 @@ public class LinkListenerService extends Service {
             }).start();
         }
     }
+
+    private final static String RESPONSE = "HTTP/1.1 200 OK" + System.getProperty("line.separator")
+            + "Access-Control-Allow-Origin: *" + System.getProperty("line.separator") +
+            "Content-Type: text/plain" + System.getProperty("line.separator") + "Content-Length: 7" +
+            System.getProperty("line.separator") + System.getProperty("line.separator") + "success";
 }
